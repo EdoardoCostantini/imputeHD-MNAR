@@ -6,15 +6,13 @@
   rm(list = ls())
   source("./init_general.R")
   
-## Single Run  
-  # Result selection
-  filename <- "exp2_simOut_20200819_1743"
-  filename <- "exp2_simOut_20210728_1351" # Items as MAR predictors (1e3)
+## Items as MAR predictors (1e3)
+  filename_lv <- "exp2_simOut_20210728_1351" # Items as MAR predictors (1e3)
   
   # Read R object
-  out <- readRDS(paste0("../output/", filename, ".rds"))
+  out_lv <- readRDS(paste0("../output/", filename_lv, ".rds"))
   
-## Join multiple results
+## Latent variables as MAR predictors (join multiple results)
   filename1 <- "exp2_simOut_20201217_1539"
   filename2 <- "exp2_simOut_20201224_1048"
   filename  <- "exp2_simOut_2020122417" # to save the output
@@ -155,3 +153,20 @@
   # The average variance of the parmaters estiamtes is almost the same for the
   # different methods. In particular, bridge does not show greater variance than
   # the other methods.
+
+# Reshaped representation
+
+out_lv_reshaped <- reshame_exp2res(out = out_lv,
+                                   n_reps = length(out_lv) - 3, # last three elements are session info
+                                   n_conds = length(out_lv[[1]]), # same for any repetitions, take 1 as example
+                                   MAR_type = "LV")
+
+out_it_reshaped <- reshame_exp2res(out = out,
+                                   n_reps = length(out) - 3, # last three elements are session info
+                                   n_conds = length(out[[1]]), # same for any repetitions, take 1 as example
+                                   MAR_type = "IT")
+
+gg_shape <- rbind(out_lv_reshaped, out_it_reshaped)
+
+dim(out_ggplot)
+rm(out_ggplot)

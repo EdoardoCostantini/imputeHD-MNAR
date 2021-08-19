@@ -305,3 +305,50 @@
          units = "cm",
          device = cairo_pdf, # allows for greek letters in text
          pf)
+
+# Latent MAR versuion
+
+# Plots -------------------------------------------------------------------
+
+  ## Obtain plots
+  # Selection
+  parm <- unique(gg_shape$par)[1] # what parameter to plot
+  result <- unique(gg_shape$variable)[1] # what result to plot
+  met_cond <- paste0(unique(gg_shape$methods)[1:4],
+                     collapse = "|")
+  lv_num <-unique(gg_shape$lv)[2]
+  methods_cond <- unique(gg_shape$methods)[1:4]
+  # Conditions
+  mar_cond <- unique(gg_shape$MAR)
+  lam_cond <- unique(gg_shape$fl)
+  #Plot
+  plot1 <- gg_shape %>%
+    # Subset
+    filter(grepl(parm, par)) %>%
+    filter(lv == lv_num) %>%
+    filter(grepl(met_cond, methods)) %>%
+    filter(grepl(result, variable)) %>%
+
+    # Main Plot
+    ggplot(aes(x = variable,
+               y = value,
+               group = MAR,
+               fill = MAR)) +
+    geom_boxplot() +
+
+    # Grid
+    facet_grid(cols = vars(factor(methods,
+                                  labels = methods_cond)),
+               rows = vars(factor(fl,
+                                  labels = paste0("fl = ", lam_cond)))) +
+    # Format
+    theme(text = element_text(size = 15),
+          plot.title = element_text(hjust = 0.5),
+          axis.text = element_text(size = 10),
+          axis.text.x = element_blank(),
+          axis.title = element_text(size = 15)) +
+    labs(title = paste0(result, " for ", parm),
+         x     = NULL,
+         y     = NULL)
+
+  plot1

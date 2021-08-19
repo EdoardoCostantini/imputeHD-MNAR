@@ -2827,3 +2827,80 @@ plotwise <- function(res,
   # Return data.frame Output
   return(store_melt)
 }
+
+reshame_exp2res <- function (out, n_reps, n_conds, MAR_type){
+  # Example inputs
+  # out = out_lv
+  # n_reps = length(out) - 3 # last three elements are session info
+  # n_conds = length(out[[1]]) # same for any repetitions, take 1 as example
+  # MAR_type = "lv"
+  # i <- 1
+  # j <- 1
+
+  # Body
+  store_reps <- vector("list", n_reps)
+  pb <- txtProgressBar(min = 0, max = n_reps, initial = 0, style = 3)
+  # Main loops
+  for (i in 1:n_reps){
+    store_conds <- matrix(nrow = 0, ncol = 18)
+    for (j in 1:n_conds){
+
+      # Define condition columns
+      cond_tag <- data.frame(out[[i]][[j]]$cond, MAR = MAR_type)
+      rownames(cond_tag) <- NULL
+
+      # Drop columns with methods that we don't want to keep
+      col_index <- !colnames(out[[i]][[j]]$semR_EST) %in% c("missFor", "mean")
+
+      ## Extract estiamtes of interest
+      # Get estiamtes
+      ests <- out[[i]][[j]]$semR_EST[, col_index]
+
+      # Attach repetition id, condition descriptors, parameter names
+      ests_par <- data.frame(rp = i,
+                             cond_tag,
+                             par = rownames(ests),
+                             variable = "est",
+                             ests)
+
+      # Reshape in long format of methods
+      # ests_long <- reshape2::melt(ests_par,
+      #                             variable.name = "methods",
+      #                             id.var = colnames(ests_par)[1:8])
+
+      ## Extract confidence intervals of interest
+      cis <- out[[i]][[j]]$semR_CI[, col_index]
+
+      # grab parameter name
+      ci_par_names <- stringr::str_remove(rownames(cis), "upr.|lwr.")
+      ci_variable <- stringr::str_remove(rownames(cis), "\\..*")
+      ci_variable <- gsub("lwr", "ci.lower", ci_variable)
+      ci_variable <- gsub("upr", "ci.upper", ci_variable)
+
+      # Attach repetition id, condition descriptors, parameter names
+      cis_par <- data.frame(rp = i,
+                            cond_tag,
+                            par = ci_par_names,
+                            variable = ci_variable,
+                            cis)
+
+      # # Reshape in long format of methods
+      # cis_long <- reshape2::melt(cis_par,
+      #                            variable.name = "methods",
+      #                            id.var = colnames(cis_par)[1:8])
+
+      ## Combine them
+      # store_conds <- rbind(store_conds, ests_par, cis_par)
+      store_conds <- gtools::smartbind(store_conds, ests_par, cis_par, fill = NA)
+      # store <- rbind(store, ests_long, cis_long)
+    }
+    store_reps[[i]] <- store_conds
+    setTxtProgressBar(pb, i)
+  }
+  close(pb)
+  store <- do.call(rbind, store_reps)
+  store_long <- reshape2::melt(store,
+                               variable.name = "methods",
+                               id.var = colnames(store)[1:8])
+  return(store_long)
+}
