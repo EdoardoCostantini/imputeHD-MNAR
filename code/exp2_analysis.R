@@ -2,33 +2,28 @@
 ### Project:  Imputing High Dimensional Data w/ MNAR
 ### Author:   Edoardo Costantini
 ### Created:  2020-07-09
+### Modified: 2021-08-19
 ### Notes:    reads output form results.R script and shows the numbers that
 ###           are used to draw the conclusions.
 
   rm(list = ls())
   source("./init_general.R")
-  
-  # Read results from a run of simulation study
-  # filename <- "exp2_simOut_20201116_1743" # short run with scaslde items
-  # filename <- "exp2_simOut_20201117_1125" # short run with scaslde items
-  # filename <- "exp2_simOut_20200819_1743" # last good one
 
-  # LVs as MAR (Joined file form two sources) 1e3 reps
-  filename <- "exp2_simOut_2020122417"
-  res <- readRDS(paste0("../output/", filename, "_res.rds"))
+  # Define possibe file names
+  filename <- c(
+    LV = "exp2_simOut_2020122417_res_lv.rds", # LVs as MAR 1e3 reps
+    IT = "exp2_simOut_20210728_1351_res_it.rds" # Items as MAR 1e3 reps
+  )[1]
 
-  # Items as MAR 1e3 reps
-  filename <- "exp2_simOut_20210728_1351_res"
-  res <- readRDS(paste0("../output/", filename, ".rds"))
+  # Read
+  res <- readRDS(paste0("../output/", filename))
+  head(res$sem$cond1$bias_per)
 
   # Plot Sizes Decisions
   gp_width <- 15
   gp_height <- 20
   sp_width <- 3.75
   sp_height <- 6
-  
-# Conds
-  res$conds
 
   # Full information names
   cond_parms <- paste0("l = ",  res$conds$lv, ", ",
@@ -45,11 +40,8 @@
                   "low-dim-high-pm-low-\u03bb",
                   "high-dim-high-pm-low-\u03bb")
   cond_names <- paste(cond_labels, cond_parms, sep = " \n ")
-  # Numbered Names
-  # cond_names <- paste0("Condition ", 1:8)
-  data.frame(res$conds, cond_names)
   
-# Select conditions to print
+  # Select conditions to print
   conds_select <- 1:4
   conds_select <- 5:8
 
@@ -58,14 +50,13 @@
   meth_compare = rev(c("DURR_la", "IURR_la", 
                        "blasso", "bridge",
                        "MI_PCA",
-                       "MI_CART", "MI_RF", 
-                       "missFor", 
+                       "MI_CART", "MI_RF",
                        "CC",
                        "MI_OP"))
   
-# > Summary version ####
-  pf <- plot_fg(dt = lapply(1:length(res$semR),
-                            function(x) data.frame( res$semR[[x]]$bias_per))[conds_select],
+# > Summary version ####
+  pf <- plot_fg(dt = lapply(1:length(res$sem),
+                            function(x) data.frame( res$sem[[x]]$bias_per))[conds_select],
                 type = "bias",
                 parPlot = list(means = 1:10,
                                variances = 11:20,
@@ -76,20 +67,22 @@
                 summy = TRUE,
                 meth_compare = meth_compare)
   pf
+
   # Save Plot
   ggsave(file = paste0("../output/graphs/",
-                       "exp2_semR_bias_",
+                       "exp2_sem_bias_",
                        paste0(range(conds_select), collapse = ""),
                        "_summy",
+                       "_", names(filename),
                        ".pdf"),
          width = sp_width*4, height = sp_height*3,
          units = "cm",
          device = cairo_pdf, # allows for greek letters in text
          pf)
   
-# > Supplementary Material ####
-  pf <- plot_fg(dt = lapply(1:length(res$semR),
-                            function(x) data.frame( res$semR[[x]]$bias_per))[conds_select],
+# > Supplementary Material ####
+  pf <- plot_fg(dt = lapply(1:length(res$sem),
+                            function(x) data.frame( res$sem[[x]]$bias_per))[conds_select],
                 type = "bias",
                 parPlot = list(means = 1:10,
                                variances = 11:20,
@@ -100,11 +93,12 @@
                 summy = FALSE,
                 meth_compare = meth_compare)
   pf
-  
+
   # Save Plot
   ggsave(file = paste0("../output/graphs/",
-                       "exp2_semR_bias_",
+                       "exp2_sem_bias_",
                        paste0(range(conds_select), collapse = ""),
+                       "_", names(filename),
                        ".pdf"),
          width = gp_width, height = gp_height,
          units = "cm",
@@ -113,17 +107,17 @@
   
 # CI (Facet grid) ---------------------------------------------------------
 
-  meth_compare = rev(c("DURR_la", "IURR_la", 
+  meth_compare = rev(c("DURR_la", "IURR_la",
                        "blasso", "bridge",
                        "MI_PCA",
-                       "MI_CART", "MI_RF", 
-                       "missFor", 
+                       "MI_CART", "MI_RF",
                        "CC",
-                       "MI_OP"))
+                       "MI_OP",
+                       "GS"))
 
-# > Summary version ####
-  pf <- plot_fg(dt = lapply(1:length(res$semR),
-                            function(x) data.frame( res$semR[[x]]$ci_cov))[conds_select],
+# > Summary version ####
+  pf <- plot_fg(dt = lapply(1:length(res$sem),
+                            function(x) data.frame( res$sem[[x]]$ci_cov))[conds_select],
                 type = "ci",
                 parPlot = list(means = 1:10,
                                variances = 11:20,
@@ -135,17 +129,19 @@
                 meth_compare = meth_compare)
   pf
   ggsave(file = paste0("../output/graphs/",
-                       "exp2_semR_ci_",
+                       "exp2_sem_ci_",
                        paste0(range(conds_select), collapse = ""),
                        "_summy",
+                       "_", names(filename),
                        ".pdf"),
          width = sp_width*4, height = sp_height*3,
          units = "cm",
          device = cairo_pdf, # allows for greek letters in text
          pf)
-# > Supplementary Material ####
-  pf <- plot_fg(dt = lapply(1:length(res$semR),
-                            function(x) data.frame( res$semR[[x]]$ci_cov))[conds_select],
+
+# > Supplementary Material ####
+  pf <- plot_fg(dt = lapply(1:length(res$sem),
+                            function(x) data.frame( res$sem[[x]]$ci_cov))[conds_select],
                 type = "ci",
                 parPlot = list(means = 1:10,
                                variances = 11:20,
@@ -156,8 +152,9 @@
                 meth_compare = meth_compare)
   pf
   ggsave(file = paste0("../output/graphs/",
-                       "exp2_semR_ci_",
+                       "exp2_sem_ci_",
                        paste0(range(conds_select), collapse = ""),
+                       "_", names(filename),
                        ".pdf"),
          width = gp_width, height = gp_height,
          units = "cm",
@@ -306,21 +303,23 @@
          device = cairo_pdf, # allows for greek letters in text
          pf)
 
-# Latent MAR versuion
+# Melted version ----------------------------------------------------------
 
-# Plots -------------------------------------------------------------------
+  filename <- "melt.rds"
+  gg_shape <- readRDS(paste0("../output/", filename))
 
-  ## Obtain plots
-  # Selection
+  # Selection what to plot
   parm <- unique(gg_shape$par)[1] # what parameter to plot
   result <- unique(gg_shape$variable)[1] # what result to plot
   met_cond <- paste0(unique(gg_shape$methods)[1:4],
                      collapse = "|")
   lv_num <-unique(gg_shape$lv)[2]
   methods_cond <- unique(gg_shape$methods)[1:4]
-  # Conditions
+
+  # Define conditions for grid of plots
   mar_cond <- unique(gg_shape$MAR)
   lam_cond <- unique(gg_shape$fl)
+
   #Plot
   plot1 <- gg_shape %>%
     # Subset
