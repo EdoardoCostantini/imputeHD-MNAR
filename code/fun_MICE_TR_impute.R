@@ -1,5 +1,5 @@
 ### Title:    Imputation according to optimal oracle imputation model
-### Project:  Imputing High Dimensional Data
+### Project:  Imputing High Dimensional Data w/ MNAR
 ### Author:   Edoardo Costantini
 ### Created:  2020-05-19
 

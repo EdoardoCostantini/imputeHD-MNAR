@@ -1,5 +1,5 @@
 ### Title:    Simulation script for ridge paramter cross-validation
-### Project:  Imputing High Dimensional Data
+### Project:  Imputing High Dimensional Data w/ MNAR
 ### Author:   Edoardo Costantini
 ### Created:  2020-07-03
 ### Notes:    The goal is to find out how many iterations should be used

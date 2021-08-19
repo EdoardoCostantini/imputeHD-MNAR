@@ -1,5 +1,5 @@
 ### Title:    Initialization scirpt mods for ridge penalty cross validation
-### Project:  Imputing High Dimensional Data (exp 2)
+### Project:  Imputing High Dimensional Data w/ MNAR (exp 2)
 ### Author:   Edoardo Costantini
 ### Created:  2020-07-22
 

@@ -1,5 +1,5 @@
 ### Title:    Initialization scirpt parameter for experiment 3 (simple latent)
-### Project:  Imputing High Dimensional Data
+### Project:  Imputing High Dimensional Data w/ MNAR
 ### Author:   Edoardo Costantini
 ### Created:  2020-07-22
 

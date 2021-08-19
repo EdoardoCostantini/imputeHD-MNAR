@@ -1,5 +1,5 @@
 ### Title:    Analysis of results from experiment 2
-### Project:  Imputing High Dimensional Data
+### Project:  Imputing High Dimensional Data w/ MNAR
 ### Author:   Edoardo Costantini
 ### Created:  2020-07-09
 ### Notes:    reads output form results.R script and shows the numbers that

@@ -1,5 +1,5 @@
 ### Title:    Convergence Checks: Initialization Script for Exp 2 (windows)
-### Project:  Imputing High Dimensional Data
+### Project:  Imputing High Dimensional Data w/ MNAR
 ### Author:   Edoardo Costantini
 ### Created:  2020-08-11
 ### Notes:    Runs the simulation for convergence checks (few repetitions, 

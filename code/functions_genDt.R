@@ -1,5 +1,5 @@
 ### Title:    data geneartion functions
-### Porject:  Imputing High Dimensional Data
+### Project:  Imputing High Dimensional Data w/ MNAR
 ### Author:   Edoardo Costantini
 ### Created:  2020-06-23
 ### Modified: 2021-08-17
